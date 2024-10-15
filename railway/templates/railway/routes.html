@@ -1,0 +1,20 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}Routes{% endblock %}
+
+{% block content %}
+    <h1>Routes list:</h1>
+    <a href="{% url 'railway:route_create' %}">Add route</a>
+    <ul>
+        {% for route in routes %}
+        <li>
+            <a href="{% url 'railway:route' route.pk %}">
+                {{ route.name }}
+            </a>
+        </li>
+        {% empty %}
+            <div>No routes yet.</div>
+        {% endfor %}
+    </ul>
+
+{% endblock content %}
