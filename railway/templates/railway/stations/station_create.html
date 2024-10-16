@@ -1,0 +1,12 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}Add station{% endblock %}
+
+{% block content %}
+    <h3>Please, enter required data:</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" value="create">Create</button>
+        </form>
+{% endblock content %}

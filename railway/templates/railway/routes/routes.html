@@ -3,8 +3,9 @@
 {% block title %}Routes{% endblock %}
 
 {% block content %}
-    <h1>Routes list:</h1>
+    <h1>Routes</h1>
     <a href="{% url 'railway:route_create' %}">Add route</a>
+    <h3>Route's list:</h3>
     <ul>
         {% for route in routes %}
         <li>
@@ -16,5 +17,4 @@
             <div>No routes yet.</div>
         {% endfor %}
     </ul>
-
 {% endblock content %}

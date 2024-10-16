@@ -1,0 +1,11 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}Station{% endblock %}
+
+{% block content %}
+    <div>
+        <h2>Station's name: {{ station.name }}</h2>
+        <a href="{% url 'railway:station_update' station.pk %}">Update</a>
+        <a href="{% url 'railway:station_delete' station.pk %}">Delete</a>
+    </div>
+{% endblock content %}

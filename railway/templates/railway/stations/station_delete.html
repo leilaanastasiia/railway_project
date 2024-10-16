@@ -1,0 +1,11 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}Delete station{% endblock %}
+
+{% block content %}
+    <h3>Delete {{ station.name }} station?</h3>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" value="delete">Delete</button>
+        </form>
+{% endblock content %}
