@@ -1,0 +1,24 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ page_title }}</h1>
+    <a href="{% url add_url_name %}">{{ add_button_text }}</a>
+    <h3>{{ list_title }}</h3>
+    <ul>
+        {% for object in objects %}
+        <li>
+            <a href="{% url detail_url_name object.pk %}">
+                {% if object.number %}
+                    {{ object.number }}
+                {% else %}
+                    {{ object.name }}
+                {% endif %}
+            </a>
+        </li>
+        {% empty %}
+            <div>{{ empty_message }}</div>
+        {% endfor %}
+    </ul>
+{% endblock content %}

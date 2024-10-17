@@ -18,3 +18,9 @@ class TrainForm(forms.ModelForm):
     class Meta:
         model = Train
         fields = ['number', 'type', 'route', 'station']
+
+
+class TrainRouteForm(forms.ModelForm):
+    class Meta:
+        model = Train
+        fields = ['route']

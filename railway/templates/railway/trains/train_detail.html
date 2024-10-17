@@ -15,6 +15,7 @@
                 No route.
             {% endif %}
         </p>
+        <a href="{% url 'railway:train_add_route' train.pk %}">Change route</a>
         <p>Current station:
             {% if train.station %}
                 <a href="{% url 'railway:station' train.station.pk %}">
