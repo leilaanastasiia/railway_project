@@ -13,6 +13,9 @@ class CustomUser(AbstractUser):
 
 
 class RailwayStation(models.Model):
+    class Meta:
+        ordering = ["name"]
+
     name = models.CharField(max_length=100, blank=False)
 
     def __str__(self):
@@ -39,6 +42,9 @@ class Route(models.Model):
         return f'{self.name}'
 
 class Train(models.Model):
+    class Meta:
+        ordering = ["number"]
+
     class Type(models.TextChoices):
         CARGO = 'CT', _('Cargo Train')
         PASSENGER = 'PT', _('Passenger Train')
