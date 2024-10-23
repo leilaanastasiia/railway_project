@@ -7,6 +7,8 @@ from railway.views.station import StationListView, StationDetailView, StationCre
     StationDeleteView
 from railway.views.train import TrainListView, TrainDetailView, TrainCreateView, TrainUpdateView, TrainDeleteView, \
     TrainAddRouteView
+from railway.views.wagon import WagonTypesView, WagonListView, WagonCreateView, WagonUpdateView, WagonDeleteView, \
+    WagonDetailView
 
 app_name = 'railway'
 
@@ -35,4 +37,13 @@ urlpatterns = [
     path('trains/<int:pk>/update/', TrainUpdateView.as_view(), name='train_update'),
     path('trains/<int:pk>/add_route', TrainAddRouteView.as_view(), name='train_add_route'),
     path('trains/<int:pk>/delete/', TrainDeleteView.as_view(), name='train_delete'),
+
+    #wagons
+    path('wagons/types', WagonTypesView.as_view(), name='wagon_types'),
+    path('wagons/<str:type>', WagonListView.as_view(), name='wagon_list'),
+    path('wagons/<str:type>/create/', WagonCreateView.as_view(), name='wagon_create'),
+    path('wagons/<str:type>/<int:pk>/', WagonDetailView.as_view(), name='wagon_detail'),
+    path('wagons/<str:type>/<int:pk>/update/', WagonUpdateView.as_view(), name='wagon_update'),
+    path('wagons/<str:type>/<int:pk>/delete/', WagonDeleteView.as_view(), name='wagon_delete'),
+
 ]

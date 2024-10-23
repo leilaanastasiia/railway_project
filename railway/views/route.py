@@ -28,7 +28,6 @@ class RouteListView(ListView):
 class RouteDetailView(DetailView):
     model = Route
     template_name = 'railway/routes/route_detail.html'
-    context_object_name = 'route'
 
 
 class RouteCreateView(CreateView):

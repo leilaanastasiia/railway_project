@@ -4,12 +4,20 @@
 
 {% block content %}
     <h1>{{ page_title }}</h1>
-    <a href="{% url add_url_name %}">{{ add_button_text }}</a>
+    {% if type %}
+        <a href="{% url add_url_name type=type %}">{{ add_button_text }}</a>
+    {% else %}
+        <a href="{% url add_url_name %}">{{ add_button_text }}</a>
+    {% endif %}
     <h3>{{ list_title }}</h3>
     <ul>
         {% for object in objects %}
         <li>
-            <a href="{% url detail_url_name object.pk %}">
+            {% if type %}
+                <a href="{% url detail_url_name type=type pk=object.pk %}">
+            {% else %}
+                <a href="{% url detail_url_name pk=object.pk %}">
+            {% endif %}
                 {% if object.number %}
                     {{ object.number }}
                 {% else %}

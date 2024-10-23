@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -53,6 +54,17 @@ class Train(models.Model):
     type = models.CharField(max_length=2, choices=Type.choices, default=Type.PASSENGER, blank=False)
     route = models.ForeignKey(Route, on_delete=models.SET_NULL, null=True, blank=True, related_name='trains')
     station = models.ForeignKey(RailwayStation, on_delete=models.SET_NULL, null=True, blank=True, related_name='trains')
+    reverse_sort_wagons = models.BooleanField(default=False)
+
+    def get_sorted_wagons(self):
+
+        all_wagons = []
+        for related in self._meta.related_objects:
+            if related.name.endswith('_wagons'):
+                wagons = getattr(self, related.name).all()  # ex. train.coupewagon_wagons
+                all_wagons.extend(wagons)
+
+        return sorted(all_wagons, key=lambda wagon: wagon.number, reverse=self.reverse_sort_wagons)
 
     def __str__(self):
         return f'{self.number}, {self.type}'
@@ -66,3 +78,60 @@ class Ticket(models.Model):
 
     def __str__(self):
         return f'Ticket for {self.train.number} train from {self.start_station.name} to {self.end_station.name}'
+
+
+class Wagon(models.Model):
+    class Meta:
+        abstract = True
+        """
+        unique among the train and (wagon_type)number, but not globally all numbers in the train 
+        platz #1 and sv #1 still can exist inside one passenger train, 
+        what is logically sufficient
+        """
+        constraints = [models.UniqueConstraint(fields=['train', 'number'], name='unique_%(class)s_number_per_train')]
+
+    number = models.PositiveIntegerField(blank=True, validators=[MaxValueValidator(999999)])
+    train = models.ForeignKey(Train, on_delete=models.SET_NULL, null=True, blank=True, related_name='%(class)s_wagons')
+
+    def clean(self):
+        if self.train and not self.is_valid_train_type():
+            raise ValidationError(f"This wagon type can't be attached to {self.train.get_type_display()} train. "
+                                f"Expected train type: {'Passenger' if isinstance(self, PassengerWagon) else 'Cargo'}")
+
+    def is_valid_train_type(self):
+        raise NotImplementedError("Subclasses must implement this method")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+
+class PassengerWagon(Wagon):
+    class Meta(Wagon.Meta):
+        abstract = True
+
+    def is_valid_train_type(self):
+        return self.train.type == Train.Type.PASSENGER
+
+
+class CargoWagon(Wagon):
+    class Meta(Wagon.Meta):
+        abstract = True
+
+    def is_valid_train_type(self):
+        return self.train.type == Train.Type.CARGO
+
+class CoupeWagon(PassengerWagon):
+    capacity = models.PositiveIntegerField(default=36, blank=False)
+
+class PlatzWagon(PassengerWagon):
+    capacity = models.PositiveIntegerField(default=54, blank=False)
+
+class SVWagon(PassengerWagon):
+    capacity = models.PositiveIntegerField(default=18, blank=False)
+
+class SittingWagon(PassengerWagon):
+    capacity = models.PositiveIntegerField(default=42, blank=False)
+
+class TankWagon(CargoWagon):
+    max_liters = models.FloatField(blank=False)

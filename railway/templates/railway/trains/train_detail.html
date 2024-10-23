@@ -27,5 +27,14 @@
         </p>
         <a href="{% url 'railway:train_update' train.pk %}">Update</a>
         <a href="{% url 'railway:train_delete' train.pk %}">Delete</a>
+        <p>Wagons:
+            {% for wagon in train.get_sorted_wagons %}
+                <li>
+                    {{ wagon.number }}
+                </li>
+            {% empty %}
+                <div>No wagons yet.</div>
+            {% endfor %}
+        </p>
     </div>
 {% endblock content %}

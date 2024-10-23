@@ -27,7 +27,6 @@ class StationListView(ListView):
 class StationDetailView(DetailView):
     model = RailwayStation
     template_name = 'railway/stations/stations_detail.html'
-    context_object_name = 'station'
 
 
 class StationCreateView(CreateView):
@@ -61,7 +60,6 @@ class StationUpdateView(UpdateView):
 class StationDeleteView(DeleteView):
     model = RailwayStation
     template_name = 'railway/generic/delete.html'
-    context_object_name = 'station'
     success_url = reverse_lazy('railway:stations')
 
     def get_context_data(self, **kwargs):

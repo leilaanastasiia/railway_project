@@ -28,7 +28,6 @@ class TrainListView(ListView):
 class TrainDetailView(DetailView):
     model = Train
     template_name = 'railway/trains/train_detail.html'
-    context_object_name = 'train'
 
 
 class TrainCreateView(CreateView):
@@ -76,7 +75,6 @@ class TrainAddRouteView(UpdateView):
 class TrainDeleteView(DeleteView):
     model = Train
     template_name = 'railway/generic/delete.html'
-    context_object_name = 'train'
     success_url = reverse_lazy('railway:trains')
 
     def get_context_data(self, **kwargs):
