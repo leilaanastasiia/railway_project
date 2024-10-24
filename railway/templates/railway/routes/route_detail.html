@@ -1,0 +1,36 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}Route{% endblock %}
+
+{% block content %}
+    <div>
+        <h2>Route's name: {{ route.name }}</h2>
+        <p>Description: {{ route.description }}</p>
+        <a href="{% url 'railway:route_update' route.pk %}">Update</a>
+        <a href="{% url 'railway:route_delete' route.pk %}">Delete</a>
+        <h3>Route's stations:</h3>
+        <ul>
+            {% for station in route.routestation_set.all %}
+            <li>
+                <a href="{% url 'railway:station' station.pk %}">
+                    {{ station.order }}: {{ station.station.name }}
+                </a>
+            </li>
+            {% empty %}
+                <div>No stations yet.</div>
+            {% endfor %}
+        </ul>
+        <h3>Route's trains:</h3>
+            <ul>
+            {% for train in route.trains.all %}
+                <li>
+                    <a href={% url 'railway:train' train.pk %}>
+                        {{ train.number }}
+                    </a>
+                </li>
+            {% empty %}
+                <div>No trains yet.</div>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock content %}

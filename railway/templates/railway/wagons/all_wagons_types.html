@@ -1,0 +1,23 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}{{ Wagons }}{% endblock %}
+
+{% block content %}
+    <h1>Wagons</h1>
+    <p>Please, select a desirable wagon's type:</p>
+    <ul>Passenger Wagons:
+        {% for type in pass_types %}
+            <li>
+                <a href="{% url 'railway:wagon_list' type=type.lower %}">{{ type }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <ul>Cargo Wagons:
+        {% for type in cargo_types %}
+            <li>
+                <a href="{% url 'railway:wagon_list' type=type.lower %}">{{ type }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+{% endblock content %}
