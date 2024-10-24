@@ -6,6 +6,7 @@
     <div>
         <h2>Train's number: {{ train.number }}</h2>
         <p>Type: {{ train.get_type_display }}</p>
+        <p>Total capacity: {{ train.get_total_capacity }} seats. </p>
         <p>Current route:
             {% if train.route %}
                 <a href="{% url 'railway:route' train.route.pk %}">
@@ -28,13 +29,17 @@
         <a href="{% url 'railway:train_update' train.pk %}">Update</a>
         <a href="{% url 'railway:train_delete' train.pk %}">Delete</a>
         <p>Wagons:
-            {% for wagon in train.get_sorted_wagons %}
+            <ul>
+                {% for wagon in train.get_sorted_wagons %}
                 <li>
-                    {{ wagon.number }}
+                    <a href="{% url 'railway:wagon_detail' type=wagon.get_classname pk=wagon.pk %}">
+                        {{ wagon.number }}
+                    </a>
                 </li>
-            {% empty %}
-                <div>No wagons yet.</div>
-            {% endfor %}
+                {% empty %}
+                    <div>No wagons yet.</div>
+                {% endfor %}
+            </ul>
         </p>
     </div>
 {% endblock content %}

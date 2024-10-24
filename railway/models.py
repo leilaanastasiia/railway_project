@@ -29,7 +29,7 @@ class Route(models.Model):
 
     name = models.CharField(max_length=100, blank=False)
     description = models.TextField()
-    stations = models.ManyToManyField(RailwayStation, related_name='routes', blank=True)
+    stations = models.ManyToManyField(RailwayStation, through='RouteStation', related_name='routes', blank=True)
 
     def clean(self):
         if not self.name:  # does not have an effect until more complex validation
@@ -41,6 +41,23 @@ class Route(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
+
+class RouteStation(models.Model):
+    route = models.ForeignKey(Route, on_delete=models.CASCADE)
+    station = models.ForeignKey(RailwayStation, on_delete=models.CASCADE)
+    order = models.PositiveIntegerField()
+
+    class Meta:
+        ordering = ['order']
+        constraints = [
+            models.UniqueConstraint(fields=['route', 'station'], name='unique_station_per_route'),
+            models.UniqueConstraint(fields=['route', 'order'], name='unique_order_per_route')
+        ]
+
+    def __str__(self):
+        return f'{self.station.name} on {self.route.name} (Position: {self.order})'
+
 
 class Train(models.Model):
     class Meta:
@@ -56,15 +73,22 @@ class Train(models.Model):
     station = models.ForeignKey(RailwayStation, on_delete=models.SET_NULL, null=True, blank=True, related_name='trains')
     reverse_sort_wagons = models.BooleanField(default=False)
 
-    def get_sorted_wagons(self):
-
+    def get_wagons(self):
         all_wagons = []
         for related in self._meta.related_objects:
             if related.name.endswith('_wagons'):
                 wagons = getattr(self, related.name).all()  # ex. train.coupewagon_wagons
                 all_wagons.extend(wagons)
+        return all_wagons
 
+    def get_sorted_wagons(self):
+        all_wagons = self.get_wagons()
         return sorted(all_wagons, key=lambda wagon: wagon.number, reverse=self.reverse_sort_wagons)
+
+    def get_total_capacity(self):
+        wagons = self.get_sorted_wagons()
+        total_capacity = sum(wagon.capacity for wagon in wagons if hasattr(wagon, 'capacity'))
+        return total_capacity
 
     def __str__(self):
         return f'{self.number}, {self.type}'
@@ -104,6 +128,10 @@ class Wagon(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+    def get_classname(self):
+        classname = self.__class__.__name__.lower()
+        return classname.replace('wagon', '')
 
 
 class PassengerWagon(Wagon):

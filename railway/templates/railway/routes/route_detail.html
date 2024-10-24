@@ -10,10 +10,10 @@
         <a href="{% url 'railway:route_delete' route.pk %}">Delete</a>
         <h3>Route's stations:</h3>
         <ul>
-            {% for station in route.stations.all %}
+            {% for station in route.routestation_set.all %}
             <li>
                 <a href="{% url 'railway:station' station.pk %}">
-                    {{ station.name }}
+                    {{ station.order }}: {{ station.station.name }}
                 </a>
             </li>
             {% empty %}

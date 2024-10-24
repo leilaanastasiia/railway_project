@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from railway.models import RailwayStation, Route, Train, CustomUser, Ticket, SVWagon, CoupeWagon, PlatzWagon, \
-    SittingWagon, TankWagon
+    SittingWagon, TankWagon, RouteStation
 
 
 @admin.register(RailwayStation)
@@ -9,10 +9,15 @@ class RailwayStationAdmin(admin.ModelAdmin):
     list_display = ('name', )
 
 
+class RouteStationInline(admin.TabularInline):
+    model = RouteStation
+    extra = 3
+    ordering = ['order']
+
 @admin.register(Route)
 class RouteAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
-    filter_horizontal = ('stations',)
+    inlines = [RouteStationInline]
 
 
 @admin.register(Train)
