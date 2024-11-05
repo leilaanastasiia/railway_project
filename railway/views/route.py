@@ -1,8 +1,13 @@
+from django.contrib import messages
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from railway.forms import RouteForm
-from railway.models import Route
+from railway.forms import RouteForm, RouteStationFormSet
+from railway.models import Route, RouteStation
 
 
 class RouteListView(ListView):
@@ -56,6 +61,31 @@ class RouteUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('railway:route', kwargs={'pk': self.object.pk})
+
+
+class RouteStationUpdateView(View):
+    template_name = 'railway/routes/routestation_update.html'
+
+    def get(self, request, pk):
+        route = get_object_or_404(Route, pk=pk)
+        formset = RouteStationFormSet(queryset=RouteStation.objects.filter(route=route))
+        return render(request, self.template_name, {'formset': formset, 'route': route})
+
+    def post(self, request, pk):
+        route = get_object_or_404(Route, pk=pk)
+        formset = RouteStationFormSet(request.POST, queryset=RouteStation.objects.filter(route=route), route=route)
+        if formset.is_valid():
+            try:
+                formset.save()
+                return redirect('railway:route', pk=pk)
+            except IntegrityError as e:  # not working
+                error_message = str(e)
+                for form in formset:
+                    if 'unique_station_per_route' in error_message:
+                        form.add_error('station', error_message)
+                    elif 'unique_order_per_route' in error_message:
+                        form.add_error('order', error_message)
+        return render(request, self.template_name, {'formset': formset, 'route': route})
 
 
 class RouteDeleteView(DeleteView):

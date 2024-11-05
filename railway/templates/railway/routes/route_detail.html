@@ -8,12 +8,14 @@
         <p>Description: {{ route.description }}</p>
         <a href="{% url 'railway:route_update' route.pk %}">Update</a>
         <a href="{% url 'railway:route_delete' route.pk %}">Delete</a>
+        <p>Total time: {{ route.get_total_travel_time }} h</p>
         <h3>Route's stations:</h3>
+        <a href="{% url 'railway:route_station_update' route.pk %}">Update stations</a>
         <ul>
-            {% for station in route.routestation_set.all %}
+            {% for station in route.get_stations %}
             <li>
                 <a href="{% url 'railway:station' station.pk %}">
-                    {{ station.order }}: {{ station.station.name }}
+                    Stop #{{ station.order }}: {{ station.station.name }}
                 </a>
             </li>
             {% empty %}

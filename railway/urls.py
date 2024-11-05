@@ -2,7 +2,8 @@ from django.shortcuts import redirect
 from django.urls import path
 
 from railway.views.index import IndexView
-from railway.views.route import RouteListView, RouteDetailView, RouteCreateView, RouteUpdateView, RouteDeleteView
+from railway.views.route import RouteListView, RouteDetailView, RouteCreateView, RouteUpdateView, RouteDeleteView, \
+    RouteStationUpdateView
 from railway.views.station import StationListView, StationDetailView, StationCreateView, StationUpdateView, \
     StationDeleteView
 from railway.views.train import TrainListView, TrainDetailView, TrainCreateView, TrainUpdateView, TrainDeleteView, \
@@ -21,6 +22,7 @@ urlpatterns = [
     path('routes/<int:pk>/', RouteDetailView.as_view(), name='route'),
     path('routes/add/', RouteCreateView.as_view(), name='route_create'),
     path('routes/<int:pk>/update/', RouteUpdateView.as_view(), name='route_update'),
+    path('routes/<int:pk>/update_stations/', RouteStationUpdateView.as_view(), name='route_station_update'),
     path('routes/<int:pk>/delete/', RouteDeleteView.as_view(), name='route_delete'),
 
     #stations

@@ -11,7 +11,7 @@ class RailwayStationAdmin(admin.ModelAdmin):
 
 class RouteStationInline(admin.TabularInline):
     model = RouteStation
-    extra = 3
+    extra = 1
     ordering = ['order']
 
 @admin.register(Route)

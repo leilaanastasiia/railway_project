@@ -1,7 +1,10 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
@@ -28,8 +31,30 @@ class Route(models.Model):
         ordering = ["name"]
 
     name = models.CharField(max_length=100, blank=False)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     stations = models.ManyToManyField(RailwayStation, through='RouteStation', related_name='routes', blank=True)
+
+    def get_stations(self):
+        return self.routestation_set.all()
+
+    def get_first_departure_time(self):
+        route_stations = self.get_stations()
+        if route_stations.exists():
+            return route_stations.first().departure_time
+        return None
+
+    def get_last_arrival_time(self):
+        route_stations = self.get_stations()
+        if route_stations.count() > 1:
+            return route_stations.last().arrival_time
+        return None
+
+    def get_total_travel_time(self):
+        first_departure = self.get_first_departure_time()
+        last_arrival = self.get_last_arrival_time()
+        if first_departure and last_arrival:
+            return last_arrival - first_departure
+        return timedelta(0)
 
     def clean(self):
         if not self.name:  # does not have an effect until more complex validation
@@ -47,13 +72,57 @@ class RouteStation(models.Model):
     route = models.ForeignKey(Route, on_delete=models.CASCADE)
     station = models.ForeignKey(RailwayStation, on_delete=models.CASCADE)
     order = models.PositiveIntegerField()
+    arrival_time = models.DateTimeField(default=timezone.now, blank=False)
+    departure_time = models.DateTimeField(default=timezone.now() + timedelta(minutes=3), blank=False)
 
     class Meta:
         ordering = ['order']
         constraints = [
-            models.UniqueConstraint(fields=['route', 'station'], name='unique_station_per_route'),
-            models.UniqueConstraint(fields=['route', 'order'], name='unique_order_per_route')
+            models.UniqueConstraint(
+                fields=['route', 'station'],
+                name='unique_station_per_route',
+                violation_error_message='This station is already added to the route.',
+            ),
+            models.UniqueConstraint(
+                fields=['route', 'order'],
+                name='unique_order_per_route',
+                violation_error_message='The station with this position is already added to the route.',
+            ),
         ]
+
+    def validate_stations_time(self):
+        previous_station = RouteStation.objects.filter(
+            route=self.route,
+            order__lt=self.order
+        ).order_by('-order').first()
+
+        if previous_station and self.arrival_time <= previous_station.departure_time:
+            raise ValidationError(
+                f"An arrival time of station {self.station.name} ({self.arrival_time}) "
+                f"must be after the departure time of the previous station "
+                f"{previous_station.station.name} ({previous_station.departure_time})."
+            )
+
+        next_station = RouteStation.objects.filter(
+            route=self.route,
+            order__gt=self.order
+        ).order_by('order').first()
+
+        if next_station and self.departure_time >= next_station.arrival_time:
+            raise ValidationError(
+                f"Departure time of station {self.station.name} ({self.departure_time}) "
+                f"must be before the arrival time of the next station "
+                f"{next_station.station.name} ({next_station.arrival_time})."
+            )
+
+    def clean(self):
+        if self.arrival_time >= self.departure_time:
+            raise ValidationError("Arrival time must be before departure time.")
+        self.validate_stations_time()
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.station.name} on {self.route.name} (Position: {self.order})'
@@ -95,7 +164,7 @@ class Train(models.Model):
 
 
 class Ticket(models.Model):
-    train = models.ForeignKey(Train, on_delete=models.CASCADE)
+    train = models.ForeignKey(Train, on_delete=models.CASCADE, related_name='tickets')
     start_station = models.ForeignKey(RailwayStation, on_delete=models.CASCADE, related_name='departure_tickets')
     end_station = models.ForeignKey(RailwayStation, on_delete=models.CASCADE, related_name='arrival_tickets')
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tickets')
@@ -119,8 +188,8 @@ class Wagon(models.Model):
 
     def clean(self):
         if self.train and not self.is_valid_train_type():
-            raise ValidationError(f"This wagon type can't be attached to {self.train.get_type_display()} train. "
-                                f"Expected train type: {'Passenger' if isinstance(self, PassengerWagon) else 'Cargo'}")
+            raise ValidationError(f"This wagon type can't be attached to {self.train.get_type_display()}. "
+                                f"Expected train type: {'Passenger' if isinstance(self, PassengerWagon) else 'Cargo'}.")
 
     def is_valid_train_type(self):
         raise NotImplementedError("Subclasses must implement this method")
