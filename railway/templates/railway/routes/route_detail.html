@@ -14,7 +14,7 @@
         <ul>
             {% for station in route.get_stations %}
             <li>
-                <a href="{% url 'railway:station' station.pk %}">
+                <a href="{% url 'railway:station' station.station.pk %}">
                     Stop #{{ station.order }}: {{ station.station.name }}
                 </a>
             </li>

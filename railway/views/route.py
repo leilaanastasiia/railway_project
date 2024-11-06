@@ -78,7 +78,7 @@ class RouteStationUpdateView(View):
             try:
                 formset.save()
                 return redirect('railway:route', pk=pk)
-            except IntegrityError as e:  # not working
+            except IntegrityError as e:
                 error_message = str(e)
                 for form in formset:
                     if 'unique_station_per_route' in error_message:
