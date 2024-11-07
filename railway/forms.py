@@ -1,25 +1,10 @@
 from django import forms
+from django.core.exceptions import ValidationError
 from django.forms import modelformset_factory
 
 from railway.models import Route, RailwayStation, Train, CoupeWagon, PlatzWagon, SVWagon, SittingWagon, TankWagon, \
     RouteStation
-
-
-class RouteStationForm(forms.ModelForm):
-    class Meta:
-        model = RouteStation
-        fields = ['station', 'order', 'arrival_time', 'departure_time']
-        
-
-class BaseRouteStationFormSet(forms.BaseModelFormSet):
-    def __init__(self, *args, route=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.route = route
-
-    def _construct_form(self, i, **kwargs):
-        form = super()._construct_form(i, **kwargs)
-        form.instance.route = self.route
-        return form
+from railway.validators import RouteStationValidator
 
 
 class RouteForm(forms.ModelForm):
@@ -77,10 +62,19 @@ class TankWagonForm(BaseCargoWagonForm):
         fields = BaseCargoWagonForm.Meta.fields + ['max_liters']
 
 
+class RouteStationForm(forms.ModelForm):
+    class Meta:
+        model = RouteStation
+        fields = ['station', 'order', 'arrival_time', 'departure_time']
+
+    def __init__(self, route, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance.route = route
+
+
 RouteStationFormSet = modelformset_factory(
     RouteStation,
     form=RouteStationForm,
-    formset=BaseRouteStationFormSet,
     extra=2,
     can_delete=True,
 )
