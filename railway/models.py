@@ -7,6 +7,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from railway.validators import RouteStationValidator
+
 
 class CustomUser(AbstractUser):
     username = models.CharField(max_length=25, unique=True)
@@ -71,58 +73,20 @@ class Route(models.Model):
 class RouteStation(models.Model):
     route = models.ForeignKey(Route, on_delete=models.CASCADE)
     station = models.ForeignKey(RailwayStation, on_delete=models.CASCADE)
-    order = models.PositiveIntegerField()
+    order = models.PositiveIntegerField(blank=False)
     arrival_time = models.DateTimeField(default=timezone.now, blank=False)
     departure_time = models.DateTimeField(default=timezone.now() + timedelta(minutes=3), blank=False)
 
     class Meta:
         ordering = ['order']
-        constraints = [
-            models.UniqueConstraint(
-                fields=['route', 'station'],
-                name='unique_station_per_route',
-                violation_error_message='This station is already added to the route.',
-            ),
-            models.UniqueConstraint(
-                fields=['route', 'order'],
-                name='unique_order_per_route',
-                violation_error_message='The station with this position is already added to the route.',
-            ),
-        ]
-
-    def validate_stations_time(self):
-        previous_station = RouteStation.objects.filter(
-            route=self.route,
-            order__lt=self.order
-        ).order_by('-order').first()
-
-        if previous_station and self.arrival_time <= previous_station.departure_time:
-            raise ValidationError(
-                f"An arrival time of station {self.station.name} ({self.arrival_time}) "
-                f"must be after the departure time of the previous station "
-                f"{previous_station.station.name} ({previous_station.departure_time})."
-            )
-
-        next_station = RouteStation.objects.filter(
-            route=self.route,
-            order__gt=self.order
-        ).order_by('order').first()
-
-        if next_station and self.departure_time >= next_station.arrival_time:
-            raise ValidationError(
-                f"Departure time of station {self.station.name} ({self.departure_time}) "
-                f"must be before the arrival time of the next station "
-                f"{next_station.station.name} ({next_station.arrival_time})."
-            )
 
     def clean(self):
-        if self.arrival_time >= self.departure_time:
-            raise ValidationError("Arrival time must be before departure time.")
-        self.validate_stations_time()
+        validator = RouteStationValidator(self)
+        validator.validate()
 
     def save(self, *args, **kwargs):
-        self.full_clean()
         super().save(*args, **kwargs)
+        self.full_clean()
 
     def __str__(self):
         return f'{self.station.name} on {self.route.name} (Position: {self.order})'

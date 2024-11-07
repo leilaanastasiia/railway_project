@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from railway.forms import RouteForm, RouteStationFormSet
+from railway.forms import RouteForm, RouteStationFormSet, RouteStationForm
 from railway.models import Route, RouteStation
 
 
@@ -68,23 +68,22 @@ class RouteStationUpdateView(View):
 
     def get(self, request, pk):
         route = get_object_or_404(Route, pk=pk)
-        formset = RouteStationFormSet(queryset=RouteStation.objects.filter(route=route))
+        formset = RouteStationFormSet(
+            queryset=RouteStation.objects.filter(route=route),
+            form_kwargs={'route': route}
+        )
         return render(request, self.template_name, {'formset': formset, 'route': route})
 
     def post(self, request, pk):
         route = get_object_or_404(Route, pk=pk)
-        formset = RouteStationFormSet(request.POST, queryset=RouteStation.objects.filter(route=route), route=route)
+        formset = RouteStationFormSet(
+            request.POST,
+            queryset=RouteStation.objects.filter(route=route),
+            form_kwargs={'route': route}
+        )
         if formset.is_valid():
-            try:
-                formset.save()
-                return redirect('railway:route', pk=pk)
-            except IntegrityError as e:
-                error_message = str(e)
-                for form in formset:
-                    if 'unique_station_per_route' in error_message:
-                        form.add_error('station', error_message)
-                    elif 'unique_order_per_route' in error_message:
-                        form.add_error('order', error_message)
+            formset.save()
+            return redirect('railway:route', pk=pk)
         return render(request, self.template_name, {'formset': formset, 'route': route})
 
 
