@@ -47,7 +47,8 @@ class RouteStationValidator:
         if (previous_station and
                 self.route_station.arrival_time <= previous_station.departure_time):
             raise ValidationError({
-                'arrival_time': f"Arrival time must be after the departure time of the previous station "
+                'arrival_time': f"Arrival time ({self.route_station.arrival_time}) "
+                                f"must be after the departure time of the previous station "
                                 f"{previous_station.station.name} ({previous_station.departure_time})."
             })
 
@@ -57,7 +58,8 @@ class RouteStationValidator:
         if (next_station and
                 self.route_station.departure_time >= next_station.arrival_time):
             raise ValidationError({
-                'departure_time': f"Departure time must be before the arrival time of the next station "
+                'departure_time': f"Departure time ({self.route_station.departure_time}"
+                                f"must be before the arrival time of the next station "
                                 f" {next_station.station.name} ({next_station.arrival_time})."
             })
 

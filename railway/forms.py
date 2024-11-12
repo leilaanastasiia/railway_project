@@ -3,8 +3,19 @@ from django.core.exceptions import ValidationError
 from django.forms import modelformset_factory
 
 from railway.models import Route, RailwayStation, Train, CoupeWagon, PlatzWagon, SVWagon, SittingWagon, TankWagon, \
-    RouteStation
-from railway.validators import RouteStationValidator
+    RouteStation, Ticket
+
+
+class TicketForm(forms.ModelForm):
+    class Meta:
+        model = Ticket
+        fields = ['user']
+
+    def __init__(self, start, end, train, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance.start_station = RailwayStation.objects.get(pk=start)
+        self.instance.end_station = RailwayStation.objects.get(pk=end)
+        self.instance.train = Train.objects.get(pk=train)
 
 
 class RouteForm(forms.ModelForm):

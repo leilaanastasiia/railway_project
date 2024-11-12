@@ -1,0 +1,45 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}Ticket search{% endblock %}
+
+{% block content %}
+    <h1>Ticket Search</h1>
+        <form method="GET" action="{% url 'railway:ticket_search' %}">
+            <div>
+                <label for="start_station">Start Station:</label>
+                    <select id="start_station" name="start_station" class="form-control">
+                        <option value="">---------</option>
+                        {% for station in stations %}
+                            <option value="{{ station.id }}">{{ station.name }}</option>
+                        {% endfor %}
+                    </select>
+            </div>
+
+            <div>
+                <label for="end_station">End Station:</label>
+                    <select id="end_station" name="end_station" class="form-control">
+                        <option value="">---------</option>
+                        {% for station in stations %}
+                            <option value="{{ station.id }}">{{ station.name }}</option>
+                        {% endfor %}
+                    </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+
+    {% if trains and start_station and end_station%}
+        <h2>Available Trains:</h2>
+        <ul>
+            {% for train in trains %}
+            <li>
+                <a href="{% url 'railway:ticket_add' start=start_station end=end_station train=train.id %}">
+                    {{ train.number }}, {{ train.route.name }} route
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No trains were found.</p>
+    {% endif %}
+
+{% endblock %}

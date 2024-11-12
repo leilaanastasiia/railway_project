@@ -10,6 +10,7 @@ from railway.views.train import TrainListView, TrainDetailView, TrainCreateView,
     TrainAddRouteView
 from railway.views.wagon import WagonTypesView, WagonListView, WagonCreateView, WagonUpdateView, WagonDeleteView, \
     WagonDetailView
+from railway.views.ticket import TicketSearchView, TicketCreateView
 
 app_name = 'railway'
 
@@ -37,15 +38,18 @@ urlpatterns = [
     path('trains/<int:pk>/', TrainDetailView.as_view(), name='train'),
     path('trains/add/', TrainCreateView.as_view(), name='train_create'),
     path('trains/<int:pk>/update/', TrainUpdateView.as_view(), name='train_update'),
-    path('trains/<int:pk>/add_route', TrainAddRouteView.as_view(), name='train_add_route'),
+    path('trains/<int:pk>/add_route/', TrainAddRouteView.as_view(), name='train_add_route'),
     path('trains/<int:pk>/delete/', TrainDeleteView.as_view(), name='train_delete'),
 
     #wagons
-    path('wagons/types', WagonTypesView.as_view(), name='wagon_types'),
-    path('wagons/<str:type>', WagonListView.as_view(), name='wagon_list'),
+    path('wagons/types/', WagonTypesView.as_view(), name='wagon_types'),
+    path('wagons/<str:type>/', WagonListView.as_view(), name='wagon_list'),
     path('wagons/<str:type>/create/', WagonCreateView.as_view(), name='wagon_create'),
     path('wagons/<str:type>/<int:pk>/', WagonDetailView.as_view(), name='wagon_detail'),
     path('wagons/<str:type>/<int:pk>/update/', WagonUpdateView.as_view(), name='wagon_update'),
     path('wagons/<str:type>/<int:pk>/delete/', WagonDeleteView.as_view(), name='wagon_delete'),
 
+    #tickets
+    path('tickets/search/',TicketSearchView.as_view(), name='ticket_search'),
+    path('tickets/add/<int:start>/<int:end>/<int:train>', TicketCreateView.as_view(), name='ticket_add')
 ]
