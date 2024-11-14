@@ -1,5 +1,6 @@
 from django.shortcuts import redirect
 from django.urls import path
+from django.contrib.auth.views import LoginView, LogoutView
 
 from railway.views.index import IndexView
 from railway.views.route import RouteListView, RouteDetailView, RouteCreateView, RouteUpdateView, RouteDeleteView, \
@@ -17,6 +18,10 @@ app_name = 'railway'
 urlpatterns = [
     path('home/', IndexView.as_view(), name='home'),
     path('', lambda request : redirect('home/', permanent=True)),
+
+    #login
+    path('login/', LoginView.as_view(redirect_authenticated_user=True), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 
     # routes
     path('routes/', RouteListView.as_view(), name='routes'),

@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Subquery, OuterRef
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, TemplateView
@@ -6,7 +7,7 @@ from railway.forms import TicketForm
 from railway.models import Ticket, RailwayStation, Route, Train, RouteStation
 
 
-class TicketSearchView(TemplateView):
+class TicketSearchView(LoginRequiredMixin, TemplateView):
     template_name = 'railway/tickets/search.html'
 
     def get_context_data(self, **kwargs):
@@ -16,12 +17,14 @@ class TicketSearchView(TemplateView):
         stations = RailwayStation.objects.all()
 
         if start_station_id and end_station_id:
+            start_station = RailwayStation.objects.get(id=start_station_id)
+            end_station = RailwayStation.objects.get(id=end_station_id)
             routes = Route.objects.filter(
-                routestation__station_id=start_station_id,
+                routestation__station=start_station,
                 routestation__order__lt=Subquery(
                     RouteStation.objects.filter(
                         route=OuterRef('pk'),
-                        station_id=end_station_id
+                        station=end_station
                     ).values('order')[:1]  # limiting the subquery to a single row
                 )
             )
@@ -31,8 +34,8 @@ class TicketSearchView(TemplateView):
             context.update({
                 'stations': stations,
                 'routes': routes,
-                'start_station': start_station_id,
-                'end_station': end_station_id,
+                'start_station': start_station,
+                'end_station': end_station,
                 'trains': trains
             })
         else:
@@ -40,7 +43,7 @@ class TicketSearchView(TemplateView):
 
         return context
 
-class TicketCreateView(CreateView):
+class TicketCreateView(LoginRequiredMixin, CreateView):
     model = Ticket
     template_name = 'railway/generic/form.html'
     form_class = TicketForm

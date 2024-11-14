@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, DetailView
 
@@ -5,7 +6,7 @@ from railway.forms import CoupeWagonForm, SVWagonForm, PlatzWagonForm, SittingWa
 from railway.models import CoupeWagon, PlatzWagon, SVWagon, SittingWagon, TankWagon
 
 
-class WagonTypesView(TemplateView):
+class WagonTypesView(LoginRequiredMixin, TemplateView):
     template_name = 'railway/wagons/all_wagons_types.html'
 
     def get_context_data(self, **kwargs):
@@ -45,7 +46,7 @@ class WagonTypeMixin:
             return TankWagonForm
         return None
 
-class WagonListView(WagonTypeMixin, ListView):
+class WagonListView(LoginRequiredMixin, WagonTypeMixin, ListView):
     template_name = 'railway/generic/list.html'
     context_object_name = 'objects'
     paginate_by = 10
@@ -68,7 +69,7 @@ class WagonListView(WagonTypeMixin, ListView):
         })
         return context
 
-class WagonDetailView(WagonTypeMixin, DetailView):
+class WagonDetailView(LoginRequiredMixin, WagonTypeMixin, DetailView):
     template_name = 'railway/wagons/wagon_detail.html'
     context_object_name = 'wagon'
 
@@ -87,7 +88,7 @@ class WagonDetailView(WagonTypeMixin, DetailView):
         return context
 
 
-class WagonCreateView(WagonTypeMixin, CreateView):
+class WagonCreateView(LoginRequiredMixin, WagonTypeMixin, CreateView):
     template_name = 'railway/generic/form.html'
     
     def get_form_class(self):
@@ -104,7 +105,7 @@ class WagonCreateView(WagonTypeMixin, CreateView):
         return reverse_lazy('railway:wagon_list', kwargs={'type': self.kwargs.get('type')})
 
 
-class WagonUpdateView(WagonTypeMixin, UpdateView):
+class WagonUpdateView(LoginRequiredMixin, WagonTypeMixin, UpdateView):
     template_name = 'railway/generic/form.html'
 
     def get_form_class(self):
@@ -125,7 +126,7 @@ class WagonUpdateView(WagonTypeMixin, UpdateView):
         return reverse_lazy('railway:wagon_detail', kwargs={'type': self.kwargs.get('type'), 'pk': self.object.pk})
 
 
-class WagonDeleteView(WagonTypeMixin, DeleteView):
+class WagonDeleteView(LoginRequiredMixin, WagonTypeMixin, DeleteView):
     template_name = 'railway/generic/delete.html'
 
     def get_object(self, queryset=None):

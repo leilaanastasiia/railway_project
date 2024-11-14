@@ -29,10 +29,11 @@
 
     {% if trains and start_station and end_station%}
         <h2>Available Trains:</h2>
+        <p>From {{ start_station.name }} to {{ end_station.name }}: </p>
         <ul>
             {% for train in trains %}
             <li>
-                <a href="{% url 'railway:ticket_add' start=start_station end=end_station train=train.id %}">
+                <a href="{% url 'railway:ticket_add' start=start_station.pk end=end_station.pk train=train.id %}">
                     {{ train.number }}, {{ train.route.name }} route
                 </a>
             </li>

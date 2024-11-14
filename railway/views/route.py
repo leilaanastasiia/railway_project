@@ -1,6 +1,4 @@
-from django.contrib import messages
-from django.core.exceptions import ValidationError
-from django.db import IntegrityError
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import View
@@ -10,7 +8,7 @@ from railway.forms import RouteForm, RouteStationFormSet
 from railway.models import Route, RouteStation
 
 
-class RouteListView(ListView):
+class RouteListView(LoginRequiredMixin, ListView):
     model = Route
     template_name = 'railway/generic/list.html'
     context_object_name = 'objects'
@@ -30,12 +28,12 @@ class RouteListView(ListView):
         return context
 
 
-class RouteDetailView(DetailView):
+class RouteDetailView(LoginRequiredMixin, DetailView):
     model = Route
     template_name = 'railway/routes/route_detail.html'
 
 
-class RouteCreateView(CreateView):
+class RouteCreateView(LoginRequiredMixin, CreateView):
     model = Route
     template_name = 'railway/generic/form.html'
     form_class = RouteForm
@@ -48,7 +46,7 @@ class RouteCreateView(CreateView):
         return context
 
 
-class RouteUpdateView(UpdateView):
+class RouteUpdateView(LoginRequiredMixin, UpdateView):
     model = Route
     form_class = RouteForm
     template_name = 'railway/generic/form.html'
@@ -63,7 +61,7 @@ class RouteUpdateView(UpdateView):
         return reverse_lazy('railway:route', kwargs={'pk': self.object.pk})
 
 
-class RouteStationUpdateView(View):
+class RouteStationUpdateView(LoginRequiredMixin, View):
     template_name = 'railway/routes/routestation_update.html'
 
     def get(self, request, pk):
@@ -87,7 +85,7 @@ class RouteStationUpdateView(View):
         return render(request, self.template_name, {'formset': formset, 'route': route})
 
 
-class RouteDeleteView(DeleteView):
+class RouteDeleteView(LoginRequiredMixin, DeleteView):
     model = Route
     template_name = 'railway/generic/delete.html'
     success_url = reverse_lazy('railway:routes')

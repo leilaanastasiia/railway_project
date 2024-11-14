@@ -9,6 +9,18 @@
         padding: 1px;
         text-align: left;
     }
+    #logout-form {
+        display: inline;
+        position: absolute;
+        right: 5px;
+    }
+    #logout-form button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        text-decoration: underline;
+    }
 </style>
 
 <nav>
@@ -17,4 +29,8 @@
     <a href="{% url 'railway:trains' %}">Trains</a>
     <a href="{% url 'railway:ticket_search' %}">Tickets</a>
     <a href="{% url 'railway:wagon_types' %}">Wagons</a>
+    <form id="logout-form" method="post" action="{% url 'railway:logout' %}">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
 </nav>

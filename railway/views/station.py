@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
@@ -5,7 +6,7 @@ from railway.forms import StationForm
 from railway.models import RailwayStation
 
 
-class StationListView(ListView):
+class StationListView(LoginRequiredMixin, ListView):
     model = RailwayStation
     template_name = 'railway/generic/list.html'
     context_object_name = 'objects'
@@ -24,12 +25,12 @@ class StationListView(ListView):
         })
         return context
 
-class StationDetailView(DetailView):
+class StationDetailView(LoginRequiredMixin, DetailView):
     model = RailwayStation
     template_name = 'railway/stations/stations_detail.html'
 
 
-class StationCreateView(CreateView):
+class StationCreateView(LoginRequiredMixin, CreateView):
     model = RailwayStation
     template_name = 'railway/generic/form.html'
     form_class = StationForm
@@ -42,7 +43,7 @@ class StationCreateView(CreateView):
         return context
 
 
-class StationUpdateView(UpdateView):
+class StationUpdateView(LoginRequiredMixin, UpdateView):
     model = RailwayStation
     form_class = StationForm
     template_name = 'railway/generic/form.html'
@@ -57,7 +58,7 @@ class StationUpdateView(UpdateView):
         return reverse_lazy('railway:station', kwargs={'pk': self.object.pk})
 
 
-class StationDeleteView(DeleteView):
+class StationDeleteView(LoginRequiredMixin, DeleteView):
     model = RailwayStation
     template_name = 'railway/generic/delete.html'
     success_url = reverse_lazy('railway:stations')

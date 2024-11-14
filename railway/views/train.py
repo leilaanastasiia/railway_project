@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
@@ -5,7 +6,7 @@ from railway.forms import TrainForm, TrainRouteForm
 from railway.models import Train
 
 
-class TrainListView(ListView):
+class TrainListView(LoginRequiredMixin, ListView):
     model = Train
     template_name = 'railway/generic/list.html'
     context_object_name = 'objects'
@@ -25,12 +26,12 @@ class TrainListView(ListView):
         return context
 
 
-class TrainDetailView(DetailView):
+class TrainDetailView(LoginRequiredMixin, DetailView):
     model = Train
     template_name = 'railway/trains/train_detail.html'
 
 
-class TrainCreateView(CreateView):
+class TrainCreateView(LoginRequiredMixin, CreateView):
     model = Train
     template_name = 'railway/generic/form.html'
     form_class = TrainForm
@@ -43,7 +44,7 @@ class TrainCreateView(CreateView):
         return context
 
 
-class TrainUpdateView(UpdateView):
+class TrainUpdateView(LoginRequiredMixin, UpdateView):
     model = Train
     form_class = TrainForm
     template_name = 'railway/generic/form.html'
@@ -57,7 +58,7 @@ class TrainUpdateView(UpdateView):
     def get_success_url(self):
         return reverse_lazy('railway:train', kwargs={'pk': self.object.pk})
 
-class TrainAddRouteView(UpdateView):
+class TrainAddRouteView(LoginRequiredMixin, UpdateView):
     model = Train
     form_class = TrainRouteForm
     template_name = 'railway/generic/form.html'
@@ -72,7 +73,7 @@ class TrainAddRouteView(UpdateView):
         return reverse_lazy('railway:train', kwargs={'pk': self.object.pk})
 
 
-class TrainDeleteView(DeleteView):
+class TrainDeleteView(LoginRequiredMixin, DeleteView):
     model = Train
     template_name = 'railway/generic/delete.html'
     success_url = reverse_lazy('railway:trains')

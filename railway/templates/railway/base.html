@@ -5,7 +5,11 @@
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-    {% block navbar %} {% include "railway/navbar.html" %} {% endblock navbar %}
+    {% block navbar %}
+        {% if request.user.is_authenticated %}
+            {% include "railway/navbar.html" %}
+        {% endif %}
+    {% endblock navbar %}
     {% block content %} {% endblock content %}
     {% include 'railway/footer.html' %}
 </body>
