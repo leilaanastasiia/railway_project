@@ -41,7 +41,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+
     'railway.apps.RailwayConfig',
+
+    'rest_framework',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'dj_rest_auth.registration',
 ]
 
 MIDDLEWARE = [
@@ -52,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware'
 ]
 
 ROOT_URLCONF = 'railway_project.urls'
@@ -90,6 +101,8 @@ DATABASES = {
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
+    # `allauth` specific authentication methods, such as login by email
+    # 'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 # Password validation
@@ -97,16 +110,16 @@ AUTHENTICATION_BACKENDS = [
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.registration.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.registration.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.registration.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.registration.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -139,3 +152,16 @@ LOGIN_URL = 'railway:login'
 LOGOUT_URL = 'railway:logout'
 LOGIN_REDIRECT_URL = 'railway:home'
 LOGOUT_REDIRECT_URL = 'railway:login'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#allauth
+SITE_ID = 1
+# ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+# ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+
+# REST_AUTH = {
+#     'USER_DETAILS_SERIALIZER': 'dj_rest_auth.serializers.UserDetailsSerializer',
+# }

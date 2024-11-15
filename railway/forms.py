@@ -1,21 +1,16 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 from django.forms import modelformset_factory
 
 from railway.models import Route, RailwayStation, Train, CoupeWagon, PlatzWagon, SVWagon, SittingWagon, TankWagon, \
-    RouteStation, Ticket
+    RouteStation, Ticket, CustomUser
 
 
-class TicketForm(forms.ModelForm):
+class CustomUserRegistrationForm(UserCreationForm):
     class Meta:
-        model = Ticket
-        fields = ['user']
-
-    def __init__(self, start, end, train, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.instance.start_station = RailwayStation.objects.get(pk=start)
-        self.instance.end_station = RailwayStation.objects.get(pk=end)
-        self.instance.train = Train.objects.get(pk=train)
+        model = CustomUser
+        fields = ['username', 'email', 'password1', 'password2']
 
 
 class RouteForm(forms.ModelForm):
@@ -71,6 +66,18 @@ class TankWagonForm(BaseCargoWagonForm):
     class Meta(BaseCargoWagonForm.Meta):
         model = TankWagon
         fields = BaseCargoWagonForm.Meta.fields + ['max_liters']
+
+
+class TicketForm(forms.ModelForm):
+    class Meta:
+        model = Ticket
+        fields = ['user']
+
+    def __init__(self, start, end, train, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.instance.start_station = RailwayStation.objects.get(pk=start)
+        self.instance.end_station = RailwayStation.objects.get(pk=end)
+        self.instance.train = Train.objects.get(pk=train)
 
 
 class RouteStationForm(forms.ModelForm):
