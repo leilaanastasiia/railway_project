@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.urls import path, include, re_path
 from django.contrib.auth.views import LoginView, LogoutView
 
-from railway.views.auth import CustomUserRegisterView
+from railway.views.auth import CustomUserRegistrationView
 from railway.views.index import IndexView
 from railway.views.route import RouteListView, RouteDetailView, RouteCreateView, RouteUpdateView, RouteDeleteView, \
     RouteStationUpdateView
@@ -30,7 +30,8 @@ urlpatterns = [
     # registration
     path('auth/', include('dj_rest_auth.urls')),
     path('auth/registration/', include('dj_rest_auth.registration.urls')),
-    path('registration/', CustomUserRegisterView.as_view(), name='register'),
+    path('registration/', CustomUserRegistrationView.as_view(), name='registration'),
+
     # path('dj-rest-auth/verify-email/', VerifyEmailView.as_view(), name='rest_verify_email'),
     # re_path(r'^dj-rest-auth/confirm-email/(?P<key>[-:\w]+)/$', confirm_email, name='account_confirm_email'),
     # path('dj-rest-auth/account-confirm-email/', VerifyEmailView.as_view(), name='account_email_verification_sent'),

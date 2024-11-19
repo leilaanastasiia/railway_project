@@ -75,7 +75,7 @@ class RouteStation(models.Model):
     station = models.ForeignKey(RailwayStation, on_delete=models.CASCADE)
     order = models.PositiveIntegerField(blank=False)
     arrival_time = models.DateTimeField(default=timezone.now, blank=False)
-    departure_time = models.DateTimeField(default=timezone.now() + timedelta(minutes=3), blank=False)
+    departure_time = models.DateTimeField(default=timezone.now, blank=False)
 
     class Meta:
         ordering = ['order']
