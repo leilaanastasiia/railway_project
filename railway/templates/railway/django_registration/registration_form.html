@@ -1,0 +1,12 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}Sing up{% endblock %}
+
+{% block content %}
+    <h3>Sing up</h3>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Sing up!</button>
+        </form>
+{% endblock content %}

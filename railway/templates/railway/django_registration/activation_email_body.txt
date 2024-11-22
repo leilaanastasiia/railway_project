@@ -1,0 +1,10 @@
+Welcome to our website!
+
+Dear, {{ user.username }}!
+To activate your account, you need to follow this link:
+{{ scheme }}://{{ site }}{% url 'railway:django_registration_activate' %}?activation_key={{ activation_key }}
+
+The link will be viable for {{ expiration_days }} days.
+
+Sincerely,
+DjangoRailway team

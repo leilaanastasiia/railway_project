@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Subquery, OuterRef
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, TemplateView
+from django.views.generic import ListView, CreateView, TemplateView, DetailView
 
 from railway.forms import TicketForm
 from railway.models import Ticket, RailwayStation, Route, Train, RouteStation
@@ -61,3 +61,8 @@ class TicketCreateView(LoginRequiredMixin, CreateView):
         kwargs['end'] = self.kwargs.get('end')
         kwargs['train'] =  self.kwargs.get('train')
         return kwargs
+
+
+class TicketDetailView(LoginRequiredMixin, DetailView):
+    model = Ticket
+    template_name = 'railway/tickets/tickets_detail.html'

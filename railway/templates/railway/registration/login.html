@@ -8,5 +8,7 @@
             {% csrf_token %}
             {{ form.as_p }}
             <button type="submit">Login</button>
-        </form>
+        </form><br>
+    <a href="{% url 'railway:password_reset' %}">Forgot a password?</a>
+    <p>Or not have an account? <a href="{% url 'railway:django_registration_register' %}">Create one!</a></p>
 {% endblock content %}
