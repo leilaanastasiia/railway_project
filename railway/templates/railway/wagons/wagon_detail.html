@@ -1,0 +1,16 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}{{ type.capitalize }} Wagon{% endblock %}
+
+{% block content %}
+    <div>
+        <h2>Wagon's number: {{ wagon.number }}</h2>
+        {% if wagon.capacity %}
+            <p>Wagon's capacity: {{ wagon.capacity }}</p>
+        {% else %}
+            <p>Wagon's max. weight: {{ wagon.max_liters }}</p>
+        {% endif %}
+        <a href="{% url update_url_name type=type pk=wagon.pk %}">Update</a>
+        <a href="{% url delete_url_name type=type pk=wagon.pk %}">Delete</a>
+    </div>
+{% endblock content %}

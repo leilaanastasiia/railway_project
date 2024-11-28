@@ -1,3 +1,6 @@
 pytest==7.4.4
 coverage==7.6.1
 pylint==3.3.1
+Django==5.1.2
+django-environ==0.11.2
+django-registration==5.1.0

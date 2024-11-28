@@ -1,0 +1,16 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}Activation confirmation{% endblock %}
+
+{% block content %}
+    {%  if not activation_error %}
+        <h3>Please, enter required data:</h3>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Sing up!</button>
+            </form>
+    {% else %}
+        <p>{{  activation_error.message }}</p>
+    {% endif %}
+{% endblock content %}

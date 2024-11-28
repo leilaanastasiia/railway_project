@@ -1,0 +1,42 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}Route's station{% endblock %}
+
+{% block content %}
+    <h2>Update Stations for Route {{ route.name }}</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            <table>
+            <tr>
+                <th>Station</th>
+                <th>Order</th>
+                <th>Arrival Time</th>
+                <th>Departure Time</th>
+                <th>Delete?</th>
+            </tr>
+            {% for form in formset %}
+                {{ form.id }}
+                <tr>
+                    <td>{{ form.station }}</td>
+                    <td>{{ form.order }}</td>
+                    <td>{{ form.arrival_time }}</td>
+                    <td>{{ form.departure_time }}</td>
+                    <td>{{ form.DELETE }}</td>
+                </tr>
+                {% if form.errors %}
+                    <tr>
+                        <td colspan="5">
+                            {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                    {{ field }}: {{ error }}
+                                {% endfor %}
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+            <button type="submit">Update</button>
+        </form>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}Ticket{% endblock %}
+
+{% block content %}
+    <div>
+        <h2>Ticket's direction: {{ ticket.start_station }} - {{ ticket.end_station }}</h2>
+        <p>Train: <a href="{% url 'railway:train' ticket.train.pk %}">{{ ticket.train.number }}</a></p>
+    </div>
+{% endblock content %}

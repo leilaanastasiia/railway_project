@@ -1,0 +1,15 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}Buy a ticket{% endblock %}
+
+{% block content %}
+    <h2>Confirm the data:</h2>
+    <p>Start Station: {{ start_station.name }}</p>
+    <p>End Station: {{ end_station.name }}</p>
+    <p>Train: {{ train.number }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Confirm</button>
+    </form>
+{% endblock content %}

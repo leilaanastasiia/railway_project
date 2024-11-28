@@ -1,0 +1,22 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}Railway Station{% endblock %}
+
+{% block content %}
+    <h2>Hi there, {{ user.username }}!</h2>
+    <p><a href="{% url 'railway:password_change' %}">Change password</a></p>
+    <p>My tickets:</p>
+    {% if user.tickets.exists %}
+        <ul>
+            {% for ticket in user.tickets.all %}
+            <li>
+                <a href="{% url 'railway:ticket' ticket.pk %}">{{ ticket.start_station }} - {{ ticket.end_station }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <ul>
+            <li>No tickets yet.</li>
+        </ul>
+    {% endif %}
+{% endblock content %}

@@ -1,0 +1,45 @@
+{% extends 'railway/base.html' %}
+
+{% block title %}Train{% endblock %}
+
+{% block content %}
+    <div>
+        <h2>Train's number: {{ train.number }}</h2>
+        <p>Type: {{ train.get_type_display }}</p>
+        <p>Total capacity: {{ train.get_total_capacity }} seats. </p>
+        <p>Current route:
+            {% if train.route %}
+                <a href="{% url 'railway:route' train.route.pk %}">
+                    {{ train.route.name }}
+                </a>
+            {% else %}
+                No route.
+            {% endif %}
+        </p>
+        <a href="{% url 'railway:train_add_route' train.pk %}">Change route</a>
+        <p>Current station:
+            {% if train.station %}
+                <a href="{% url 'railway:station' train.station.pk %}">
+                    {{ train.station.name }}
+                </a>
+            {% else %}
+                No station.
+            {% endif %}
+        </p>
+        <a href="{% url 'railway:train_update' train.pk %}">Update</a>
+        <a href="{% url 'railway:train_delete' train.pk %}">Delete</a>
+        <p>Wagons:
+            <ul>
+                {% for wagon in train.get_sorted_wagons %}
+                <li>
+                    <a href="{% url 'railway:wagon_detail' type=wagon.get_classname pk=wagon.pk %}">
+                        {{ wagon.number }}
+                    </a>
+                </li>
+                {% empty %}
+                    <div>No wagons yet.</div>
+                {% endfor %}
+            </ul>
+        </p>
+    </div>
+{% endblock content %}
