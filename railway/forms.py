@@ -9,10 +9,17 @@ from railway.models import Route, RailwayStation, Train, CoupeWagon, PlatzWagon,
 class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
-        fields = ['user']
+        fields = ['user', 'start_station', 'end_station', 'train']
 
-    def __init__(self, start, end, train, *args, **kwargs):
+
+class TicketBuyForm(forms.ModelForm):
+    class Meta:
+        model = Ticket
+        fields = []
+
+    def __init__(self, start, end, train, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.instance.user = user
         self.instance.start_station = RailwayStation.objects.get(pk=start)
         self.instance.end_station = RailwayStation.objects.get(pk=end)
         self.instance.train = Train.objects.get(pk=train)

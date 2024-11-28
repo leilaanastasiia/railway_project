@@ -3,10 +3,11 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from railway.forms import StationForm
+from railway.mixins import IsAdminUserMixin
 from railway.models import RailwayStation
 
 
-class StationListView(LoginRequiredMixin, ListView):
+class StationListView(LoginRequiredMixin, IsAdminUserMixin, ListView):
     model = RailwayStation
     template_name = 'railway/generic/list.html'
     context_object_name = 'objects'
@@ -25,12 +26,12 @@ class StationListView(LoginRequiredMixin, ListView):
         })
         return context
 
-class StationDetailView(LoginRequiredMixin, DetailView):
+class StationDetailView(LoginRequiredMixin, IsAdminUserMixin, DetailView):
     model = RailwayStation
     template_name = 'railway/stations/stations_detail.html'
 
 
-class StationCreateView(LoginRequiredMixin, CreateView):
+class StationCreateView(LoginRequiredMixin, IsAdminUserMixin, CreateView):
     model = RailwayStation
     template_name = 'railway/generic/form.html'
     form_class = StationForm
@@ -43,7 +44,7 @@ class StationCreateView(LoginRequiredMixin, CreateView):
         return context
 
 
-class StationUpdateView(LoginRequiredMixin, UpdateView):
+class StationUpdateView(LoginRequiredMixin, IsAdminUserMixin, UpdateView):
     model = RailwayStation
     form_class = StationForm
     template_name = 'railway/generic/form.html'
@@ -58,7 +59,7 @@ class StationUpdateView(LoginRequiredMixin, UpdateView):
         return reverse_lazy('railway:station', kwargs={'pk': self.object.pk})
 
 
-class StationDeleteView(LoginRequiredMixin, DeleteView):
+class StationDeleteView(LoginRequiredMixin, IsAdminUserMixin, DeleteView):
     model = RailwayStation
     template_name = 'railway/generic/delete.html'
     success_url = reverse_lazy('railway:stations')

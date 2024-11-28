@@ -1,9 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Subquery, OuterRef
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, TemplateView, DetailView
+from django.views.generic import ListView, CreateView, TemplateView, DetailView, UpdateView, DeleteView
 
-from railway.forms import TicketForm
+from railway.forms import TicketForm, TicketBuyForm
+from railway.mixins import IsAdminUserMixin
 from railway.models import Ticket, RailwayStation, Route, Train, RouteStation
 
 
@@ -45,18 +46,20 @@ class TicketSearchView(LoginRequiredMixin, TemplateView):
 
 class TicketCreateView(LoginRequiredMixin, CreateView):
     model = Ticket
-    template_name = 'railway/generic/form.html'
-    form_class = TicketForm
-    success_url = reverse_lazy('railway:ticket_search')
+    template_name = 'railway/tickets/purchase.html'
+    form_class = TicketBuyForm
+    success_url = reverse_lazy('railway:home')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['object_name'] = 'Ticket'
-        context['action'] = 'Buy'
+        context['start_station'] = RailwayStation.objects.get(pk=self.kwargs.get('start'))
+        context['end_station'] = RailwayStation.objects.get(pk=self.kwargs.get('end'))
+        context['train'] = Train.objects.get(pk=self.kwargs.get('train'))
         return context
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
         kwargs['start'] = self.kwargs.get('start')
         kwargs['end'] = self.kwargs.get('end')
         kwargs['train'] =  self.kwargs.get('train')
@@ -66,3 +69,35 @@ class TicketCreateView(LoginRequiredMixin, CreateView):
 class TicketDetailView(LoginRequiredMixin, DetailView):
     model = Ticket
     template_name = 'railway/tickets/tickets_detail.html'
+
+
+class TicketListView(LoginRequiredMixin, IsAdminUserMixin, ListView):
+    model = Ticket
+    context_object_name = 'tickets'
+    template_name = 'railway/tickets/admin_tickets_list.html'
+
+
+class TicketUpdateView(LoginRequiredMixin, IsAdminUserMixin, UpdateView):
+    model = Ticket
+    form_class = TicketForm
+    template_name = 'railway/generic/form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object_name'] = 'Ticket'
+        context['action'] = 'Update'
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy('railway:tickets')
+
+
+class TicketDeleteView(LoginRequiredMixin, IsAdminUserMixin, DeleteView):
+    model = Ticket
+    template_name = 'railway/generic/delete.html'
+    success_url = reverse_lazy('railway:tickets')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object_name'] = 'ticket'
+        return context

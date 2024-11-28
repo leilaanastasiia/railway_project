@@ -2,11 +2,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView, DetailView
 
-from railway.forms import CoupeWagonForm, SVWagonForm, PlatzWagonForm, SittingWagonForm, TankWagonForm
-from railway.models import CoupeWagon, PlatzWagon, SVWagon, SittingWagon, TankWagon
+from railway.mixins import IsAdminUserMixin, WagonTypeMixin
 
 
-class WagonTypesView(LoginRequiredMixin, TemplateView):
+class WagonTypesView(LoginRequiredMixin, IsAdminUserMixin, TemplateView):
     template_name = 'railway/wagons/all_wagons_types.html'
 
     def get_context_data(self, **kwargs):
@@ -17,36 +16,8 @@ class WagonTypesView(LoginRequiredMixin, TemplateView):
         })
         return context
 
-class WagonTypeMixin:
-    def get_model(self):
-        wagon_type = self.kwargs.get('type').lower()
-        if wagon_type == 'coupe':
-            return CoupeWagon
-        elif wagon_type == 'platz':
-            return PlatzWagon
-        elif wagon_type == 'sv':
-            return SVWagon
-        elif wagon_type == 'sitting':
-            return SittingWagon
-        elif wagon_type == 'tank':
-            return TankWagon
-        return None
 
-    def get_form_class(self):
-        wagon_type = self.kwargs.get('type').lower()
-        if wagon_type == 'coupe':
-            return CoupeWagonForm
-        elif wagon_type == 'platz':
-            return PlatzWagonForm
-        elif wagon_type == 'sv':
-            return SVWagonForm
-        elif wagon_type == 'sitting':
-            return SittingWagonForm
-        elif wagon_type == 'tank':
-            return TankWagonForm
-        return None
-
-class WagonListView(LoginRequiredMixin, WagonTypeMixin, ListView):
+class WagonListView(LoginRequiredMixin, IsAdminUserMixin, WagonTypeMixin, ListView):
     template_name = 'railway/generic/list.html'
     context_object_name = 'objects'
     paginate_by = 10
@@ -69,7 +40,7 @@ class WagonListView(LoginRequiredMixin, WagonTypeMixin, ListView):
         })
         return context
 
-class WagonDetailView(LoginRequiredMixin, WagonTypeMixin, DetailView):
+class WagonDetailView(LoginRequiredMixin, IsAdminUserMixin, WagonTypeMixin, DetailView):
     template_name = 'railway/wagons/wagon_detail.html'
     context_object_name = 'wagon'
 
@@ -88,7 +59,7 @@ class WagonDetailView(LoginRequiredMixin, WagonTypeMixin, DetailView):
         return context
 
 
-class WagonCreateView(LoginRequiredMixin, WagonTypeMixin, CreateView):
+class WagonCreateView(LoginRequiredMixin, IsAdminUserMixin, WagonTypeMixin, CreateView):
     template_name = 'railway/generic/form.html'
     
     def get_form_class(self):
@@ -105,7 +76,7 @@ class WagonCreateView(LoginRequiredMixin, WagonTypeMixin, CreateView):
         return reverse_lazy('railway:wagon_list', kwargs={'type': self.kwargs.get('type')})
 
 
-class WagonUpdateView(LoginRequiredMixin, WagonTypeMixin, UpdateView):
+class WagonUpdateView(LoginRequiredMixin, IsAdminUserMixin, WagonTypeMixin, UpdateView):
     template_name = 'railway/generic/form.html'
 
     def get_form_class(self):
@@ -126,7 +97,7 @@ class WagonUpdateView(LoginRequiredMixin, WagonTypeMixin, UpdateView):
         return reverse_lazy('railway:wagon_detail', kwargs={'type': self.kwargs.get('type'), 'pk': self.object.pk})
 
 
-class WagonDeleteView(LoginRequiredMixin, WagonTypeMixin, DeleteView):
+class WagonDeleteView(LoginRequiredMixin, IsAdminUserMixin, WagonTypeMixin, DeleteView):
     template_name = 'railway/generic/delete.html'
 
     def get_object(self, queryset=None):

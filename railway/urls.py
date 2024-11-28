@@ -83,6 +83,9 @@ urlpatterns = [
 
     #tickets
     path('tickets/search/', ticket.TicketSearchView.as_view(), name='ticket_search'),
+    path('tickets/', ticket.TicketListView.as_view(), name='tickets'),
     path('tickets/<int:pk>/', ticket.TicketDetailView.as_view(), name='ticket'),
+    path('tickets/<int:pk>/update/', ticket.TicketUpdateView.as_view(), name='ticket_update'),
+    path('tickets/<int:pk>/delete/', ticket.TicketDeleteView.as_view(), name='ticket_delete'),
     path('tickets/add/<int:start>/<int:end>/<int:train>', ticket.TicketCreateView.as_view(), name='ticket_add'),
 ]

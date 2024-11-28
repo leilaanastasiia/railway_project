@@ -11,6 +11,12 @@ from railway.validators import RouteStationValidator
 
 
 class CustomUser(AbstractUser):
+
+    class Type(models.TextChoices):
+        ADMIN = 'Admin', _('Admin')
+        CUSTOMER = 'Customer', _('Customer')
+
+    type = models.CharField(max_length=8, choices=Type.choices, default=Type.CUSTOMER, blank=False)
     username = models.CharField(max_length=25, unique=True)
     email = models.EmailField(unique=True, blank=False)
 
@@ -75,7 +81,7 @@ class RouteStation(models.Model):
     station = models.ForeignKey(RailwayStation, on_delete=models.CASCADE)
     order = models.PositiveIntegerField(blank=False)
     arrival_time = models.DateTimeField(default=timezone.now, blank=False)
-    departure_time = models.DateTimeField(default=timezone.now() + timedelta(minutes=3), blank=False)
+    departure_time = models.DateTimeField(default=timezone.now, blank=False)
 
     class Meta:
         ordering = ['order']

@@ -5,10 +5,11 @@ from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from railway.forms import RouteForm, RouteStationFormSet
+from railway.mixins import IsAdminUserMixin
 from railway.models import Route, RouteStation
 
 
-class RouteListView(LoginRequiredMixin, ListView):
+class RouteListView(LoginRequiredMixin, IsAdminUserMixin, ListView):
     model = Route
     template_name = 'railway/generic/list.html'
     context_object_name = 'objects'
@@ -28,12 +29,12 @@ class RouteListView(LoginRequiredMixin, ListView):
         return context
 
 
-class RouteDetailView(LoginRequiredMixin, DetailView):
+class RouteDetailView(LoginRequiredMixin, IsAdminUserMixin, DetailView):
     model = Route
     template_name = 'railway/routes/route_detail.html'
 
 
-class RouteCreateView(LoginRequiredMixin, CreateView):
+class RouteCreateView(LoginRequiredMixin, IsAdminUserMixin, CreateView):
     model = Route
     template_name = 'railway/generic/form.html'
     form_class = RouteForm
@@ -46,7 +47,7 @@ class RouteCreateView(LoginRequiredMixin, CreateView):
         return context
 
 
-class RouteUpdateView(LoginRequiredMixin, UpdateView):
+class RouteUpdateView(LoginRequiredMixin, IsAdminUserMixin, UpdateView):
     model = Route
     form_class = RouteForm
     template_name = 'railway/generic/form.html'
@@ -61,7 +62,7 @@ class RouteUpdateView(LoginRequiredMixin, UpdateView):
         return reverse_lazy('railway:route', kwargs={'pk': self.object.pk})
 
 
-class RouteStationUpdateView(LoginRequiredMixin, View):
+class RouteStationUpdateView(LoginRequiredMixin, IsAdminUserMixin, View):
     template_name = 'railway/routes/routestation_update.html'
 
     def get(self, request, pk):
@@ -85,7 +86,7 @@ class RouteStationUpdateView(LoginRequiredMixin, View):
         return render(request, self.template_name, {'formset': formset, 'route': route})
 
 
-class RouteDeleteView(LoginRequiredMixin, DeleteView):
+class RouteDeleteView(LoginRequiredMixin, IsAdminUserMixin, DeleteView):
     model = Route
     template_name = 'railway/generic/delete.html'
     success_url = reverse_lazy('railway:routes')

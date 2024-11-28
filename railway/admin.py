@@ -46,4 +46,6 @@ class CargoWagonAdmin(admin.ModelAdmin):
     list_display = ('number', 'train', 'max_liters')
     list_filter = ('train',)
 
-admin.site.register(CustomUser)
+@admin.register(CustomUser)
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'email', 'type', 'is_superuser')
